@@ -7,6 +7,7 @@
 #include "Show_jadwal.cpp"
 // #include "Informasi_penerbangan.cpp"
 #include "Booking_tiket.cpp"
+#include "Informasi.cpp"
 
 #define file_database_user "database_user.txt"
 #define file_database_pesawat "database_jadwal_pesawat.txt"
@@ -68,7 +69,7 @@ void Dashboard2 (char email[64], char password[16]) {
 		"Profile",
 		"Informasi Penerbangan",
 		// "Perubahan Jadwal",
-		"Cancel Penerbangan",
+		// "Cancel Penerbangan",
 		"Booking Tiket",
 		"Logout"
 	};
@@ -86,12 +87,12 @@ void Dashboard2 (char email[64], char password[16]) {
 	fgets(tmp_buffer, 32, stdin);
 	pilihan = atoi(tmp_buffer);
 
-	enum option{PROFILE = 1, INFO, CANCEL, BOOKING, FINISH};
+	enum option{PROFILE = 1, INFO, BOOKING, FINISH};
 	while (pilihan != FINISH) {
 		switch (pilihan) {
 			case PROFILE: Profile(email,password); break;
-			case INFO: break;
-			case CANCEL: break;
+			case INFO: Informasi(); break;
+			// case CANCEL: break;
 			case BOOKING: Booking(); break;
 			default: cout << "Pilihan tidak tersedia" << endl; getch(); break;
 		}

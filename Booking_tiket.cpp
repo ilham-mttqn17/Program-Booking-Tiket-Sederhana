@@ -1,8 +1,11 @@
+#ifndef TIKET
+#define TIKET 
 #include <iostream>
 #include <cstdio>
 #include <conio.h>
 #include <limits>
 #include <string.h>
+#include "Registrasi_akun.cpp"
 
 using namespace std;
 
@@ -11,6 +14,8 @@ using namespace std;
 #define file_database_tiket_bus "database_tiket_bus.txt"
 
 struct Tiket{
+	struct Jadwal jadwal_buf;
+	char nama_pengguna[32];
 	string nama_kendaraan;
 	int no_bangku=0;
 	string kelas[2] = {"Bisnis","Ekonomi"};
@@ -64,11 +69,12 @@ void Booking () {
 }
 
 void bookPesawat() {
-	FILE *handle, *handle2;
+	FILE *handle, *handle2, *handle3;
 	int pilih, nread=0, no_pilih, tmp_class, tipe, tipe1, bayar, metode_bayar;
 	string kelas[] = {"Bisnis","Ekonomi"};
 	char x, tmp_buffer[64] = {0};
 	struct Tiket tiket;
+	struct User user;
 	struct Jadwal jadwal[5];
 
 	jadwalPesawat();
@@ -131,14 +137,31 @@ void bookPesawat() {
 			if (nread == 0){
 				break;
 			}
-			tiket.nama_kendaraan = jadwal[no_pilih-1].nama_maskapai;
+			tiket.jadwal_buf = jadwal[no_pilih-1];
 
 		}
 	}
 	fclose(handle);
 
+	handle3 = fopen(file_database_user,"rb+");
+	if (handle3 == NULL)
+	{
+		cout << "Database Kosong" << endl;
+		getch();
+	} else {
+		while(!feof(handle3)) {
+			if (fread(&user, 1, sizeof(user), handle3) == 0)
+			{
+				break;
+			}
+
+			strcpy(tiket.nama_pengguna, user.nama);
+		}
+	}
+	fclose(handle3);
+
 	cout << "\nKonfirmasi Pembelian" << endl;
-	cout << "Nama Kendaraan\t\t: " << tiket.nama_kendaraan << endl;
+	cout << "Nama Kendaraan\t\t: " << tiket.jadwal_buf.nama_maskapai << endl;
 	cout << "Kelas\t\t\t: " << tiket.kelas[tipe-1] << endl;
 	cout << "Total bayar\t\t: " << tiket.harga << endl;
 	cout << "Metode Pembayaran\t: " << tiket.metode_bayar[tipe1-1] << endl;
@@ -153,17 +176,13 @@ void bookPesawat() {
 		{
 			cout << "Database Kosong" << endl;
 		} else {
-			while(!feof(handle2)){
-				if (fread(&tiket, 1, sizeof(&tiket), handle2) == 0)
-				{
-					break;
-				}
+			
 				tiket.no_bangku++;
-				fwrite(&tiket, sizeof(tiket), 1, handle2);
-			}
+				fwrite(&tiket, sizeof(tiket), 1, handle2);				
+				cout << "Pembayaran Berhasil" << endl;
+				fclose(handle2);
 		}
-		cout << "Pembayaran Berhasil" << endl;
-		fclose(handle2);
+			
 		
 	} else if (x == 'N' || x == 'n')
 	{
@@ -264,17 +283,13 @@ void bookKereta() {
 		{
 			cout << "Database Kosong" << endl;
 		} else {
-			while(!feof(handle2)){
-				if (fread(&tiket, 1, sizeof(&tiket), handle2) == 0)
-				{
-					break;
-				}
+			
 				tiket.no_bangku++;
 				fwrite(&tiket, sizeof(tiket), 1, handle2);
-			}
+				cout << "Pembayaran Berhasil" << endl;
+				fclose(handle2);
 		}
-		cout << "Pembayaran Berhasil" << endl;
-		fclose(handle2);
+		
 		
 	} else if (x == 'N' || x == 'n')
 	{
@@ -375,17 +390,12 @@ void bookBus() {
 		{
 			cout << "Database Kosong" << endl;
 		} else {
-			while(!feof(handle2)){
-				if (fread(&tiket, 1, sizeof(&tiket), handle2) == 0)
-				{
-					break;
-				}
 				tiket.no_bangku++;
-				fwrite(&tiket, sizeof(tiket), 1, handle2);
-			}
+				fwrite(&tiket, 1, sizeof(tiket), handle2);
+				cout << "Pembayaran Berhasil" << endl;
+				fclose(handle2);
 		}
-		cout << "Pembayaran Berhasil" << endl;
-		fclose(handle2);
+		
 		
 	} else if (x == 'N' || x == 'n')
 	{
@@ -395,3 +405,5 @@ void bookBus() {
 
 	getch();
 }
+
+#endif
